@@ -147,6 +147,15 @@ class CrmClaim(models.Model):
         for invoice_line in invoices_lines:
             location_dest = claim_line.get_destination_location(
                 invoice_line.product_id, warehouse)
+            line = self.__create_line_from_invoice_line(
+                invoice_line,
+                location_dest
+            )
+            lines.append((0, 0, line))
+        return lines
+
+    def __create_line_from_invoice_line(self, invoice_line, location_dest):
+
             line = {
                 'name': invoice_line.name,
                 'claim_origin': "none",
@@ -161,8 +170,8 @@ class CrmClaim(models.Model):
                 invoice_line.product_id,
                 self,
             ))
-            lines.append((0, 0, line))
-        return lines
+
+            return line
 
     def __create_lines_from_invoice_packages(self):
         claim_line = self.env['claim.line']
@@ -172,6 +181,7 @@ class CrmClaim(models.Model):
         )
         lines = []
         for invoice_line in invoices_lines:
+            line = None
             location_dest = claim_line.get_destination_location(
                 invoice_line.product_id, warehouse)
             if not invoice_line.sale_line_ids:
@@ -203,6 +213,12 @@ class CrmClaim(models.Model):
                     invoice_line.product_id,
                     self,
                 ))
+                lines.append((0, 0, line))
+            if not line:
+                line = self.__create_line_from_invoice_line(
+                    invoice_line,
+                    location_dest
+                )
                 lines.append((0, 0, line))
         return lines
 
