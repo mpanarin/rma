@@ -16,9 +16,9 @@ class AccountInvoice(models.Model):
 
     claim_id = fields.Many2one('crm.claim', string='Claim')
 
-    partner_id = fields.Many2one('res.partner', Index=True)
+    partner_id = fields.Many2one('res.partner', index=True)
 
-    commercial_partner_id = fields.Many2one('res.partner', Index=True)
+    commercial_partner_id = fields.Many2one('res.partner', index=True)
 
     def _refund_cleanup_lines(self, lines):
         """ Override when from claim to update the quantity and link to the
