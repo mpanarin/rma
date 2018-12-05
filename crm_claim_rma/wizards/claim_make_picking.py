@@ -130,6 +130,13 @@ class ClaimMakePicking(models.TransientModel):
         }
 
     def _get_picking_line_data(self, claim, picking, line):
+        move_id = None
+        if not line.origin_move:
+            moves = line.mapped('invoice_line_id.sale_line_ids.procurement_ids')
+            if moves:
+                move_id = moves[0].id
+        else:
+            move_id = line.origin_move.id
         return {
             'name': line.product_id.name_template,
             'priority': '0',
@@ -146,7 +153,7 @@ class ClaimMakePicking(models.TransientModel):
             'location_id': self.claim_line_source_location_id.id,
             'location_dest_id': self.claim_line_dest_location_id.id,
             'note': self._get_picking_note(),
-            'origin_returned_move_id': line.origin_move.id,
+            'origin_returned_move_id': move_id,
         }
 
     def _create_picking(self, claim, picking_type):
